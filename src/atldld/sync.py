@@ -199,8 +199,8 @@ def get_parallel_transform(
 
     coords_img = pir_to_xy(coords_ref, affine_2d, affine_3d)[:2]
 
-    tx = coords_img[0].reshape(grid_shape) / (2 ** downsample_img)
-    ty = coords_img[1].reshape(grid_shape) / (2 ** downsample_img)
+    tx = coords_img[0].reshape(grid_shape) / (2**downsample_img)
+    ty = coords_img[1].reshape(grid_shape) / (2**downsample_img)
 
     dx = tx - grid[1]
     dy = ty - grid[0]
@@ -378,8 +378,6 @@ class DatasetDownloader:
         metadata_images = self.metadata["images"]
         metadata_dataset = self.metadata["dataset"]
 
-        detection_xy = np.array(self.detection_xy)[:, None]
-
         plane_of_section = metadata_dataset["plane_of_section_id"]
         if plane_of_section == 1:
             slice_coordinate_ix = 0
@@ -394,8 +392,8 @@ class DatasetDownloader:
             z = metadata_dataset["section_thickness"] * metadata_image["section_number"]
             detection_xy = np.array(
                 [
-                    [detection_xy[0]],
-                    [detection_xy[1]],
+                    [self.detection_xy[0]],
+                    [self.detection_xy[1]],
                     [z],
                 ],
                 dtype=np.float32,
@@ -421,6 +419,8 @@ class DatasetDownloader:
                 image_id,
                 downsample=self.downsample_img,
             )
+            if img is None:
+                continue
 
             if self.include_expression:
                 img_expression = get_image(
